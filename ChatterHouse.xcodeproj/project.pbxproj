@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 50;
+	objectVersion = 51;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -12,9 +12,12 @@
 		A94AE5AE24A92AA0001C0B56 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A94AE5AD24A92AA0001C0B56 /* Assets.xcassets */; };
 		A94AE5B124A92AA0001C0B56 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A94AE5B024A92AA0001C0B56 /* Preview Assets.xcassets */; };
 		A94AE5B424A92AA0001C0B56 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = A94AE5B224A92AA0001C0B56 /* Main.storyboard */; };
+		DE985F58F610A2144092C96B /* Pods_ChatterHouse.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 23306B35A9FB243FBF90F89D /* Pods_ChatterHouse.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		23306B35A9FB243FBF90F89D /* Pods_ChatterHouse.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_ChatterHouse.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		63BFB4EA0280665F90D07748 /* Pods-ChatterHouse.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ChatterHouse.release.xcconfig"; path = "Target Support Files/Pods-ChatterHouse/Pods-ChatterHouse.release.xcconfig"; sourceTree = "<group>"; };
 		A94AE5A624A92A9E001C0B56 /* ChatterHouse.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ChatterHouse.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		A94AE5A924A92A9E001C0B56 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		A94AE5AB24A92A9E001C0B56 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -23,6 +26,7 @@
 		A94AE5B324A92AA0001C0B56 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		A94AE5B524A92AA0001C0B56 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		A94AE5B624A92AA0001C0B56 /* ChatterHouse.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = ChatterHouse.entitlements; sourceTree = "<group>"; };
+		F0A23C5D768F32900CCD6D0E /* Pods-ChatterHouse.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ChatterHouse.debug.xcconfig"; path = "Target Support Files/Pods-ChatterHouse/Pods-ChatterHouse.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -30,17 +34,37 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				DE985F58F610A2144092C96B /* Pods_ChatterHouse.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		68A9C39325F84EA1A56D53BC /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				23306B35A9FB243FBF90F89D /* Pods_ChatterHouse.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		6973A07C02630A26C05E75D5 /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				F0A23C5D768F32900CCD6D0E /* Pods-ChatterHouse.debug.xcconfig */,
+				63BFB4EA0280665F90D07748 /* Pods-ChatterHouse.release.xcconfig */,
+			);
+			path = Pods;
+			sourceTree = "<group>";
+		};
 		A94AE59D24A92A9E001C0B56 = {
 			isa = PBXGroup;
 			children = (
 				A94AE5A824A92A9E001C0B56 /* ChatterHouse */,
 				A94AE5A724A92A9E001C0B56 /* Products */,
+				6973A07C02630A26C05E75D5 /* Pods */,
+				68A9C39325F84EA1A56D53BC /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -81,9 +105,11 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = A94AE5B924A92AA0001C0B56 /* Build configuration list for PBXNativeTarget "ChatterHouse" */;
 			buildPhases = (
+				E60EB261E7E9799A00AF4FD5 /* [CP] Check Pods Manifest.lock */,
 				A94AE5A224A92A9E001C0B56 /* Sources */,
 				A94AE5A324A92A9E001C0B56 /* Frameworks */,
 				A94AE5A424A92A9E001C0B56 /* Resources */,
+				BD053F83560A560C0DE95A45 /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -139,6 +165,48 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		BD053F83560A560C0DE95A45 /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-ChatterHouse/Pods-ChatterHouse-frameworks-${CONFIGURATION}-input-files.xcfilelist",
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-ChatterHouse/Pods-ChatterHouse-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-ChatterHouse/Pods-ChatterHouse-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		E60EB261E7E9799A00AF4FD5 /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-ChatterHouse-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		A94AE5A224A92A9E001C0B56 /* Sources */ = {
@@ -279,9 +347,11 @@
 		};
 		A94AE5BA24A92AA0001C0B56 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = F0A23C5D768F32900CCD6D0E /* Pods-ChatterHouse.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = ChatterHouse/ChatterHouse.entitlements;
+				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				DEVELOPMENT_ASSET_PATHS = "\"ChatterHouse/Preview Content\"";
@@ -302,9 +372,11 @@
 		};
 		A94AE5BB24A92AA0001C0B56 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 63BFB4EA0280665F90D07748 /* Pods-ChatterHouse.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = ChatterHouse/ChatterHouse.entitlements;
+				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				DEVELOPMENT_ASSET_PATHS = "\"ChatterHouse/Preview Content\"";

@@ -8,6 +8,7 @@
 
 import Cocoa
 import SwiftUI
+import Magnet
 
 @NSApplicationMain
 class AppDelegate: NSObject, NSApplicationDelegate {
@@ -31,6 +32,14 @@ class AppDelegate: NSObject, NSApplicationDelegate {
              button.image = NSImage(named: "Icon")
              button.action = #selector(togglePopover(_:))
         }
+        
+        // ⌘ + Control + B
+        guard let keyCombo = KeyCombo(key: .b, cocoaModifiers: [.command, .control]) else { return }
+        let hotKey = HotKey(identifier: "CommandControlB",
+                            keyCombo: keyCombo,
+                            target: self,
+                            action: #selector(AppDelegate.tappedHotKey))
+        hotKey.register()
     
     
     }
@@ -44,6 +53,10 @@ class AppDelegate: NSObject, NSApplicationDelegate {
                     self.popover.contentViewController?.view.window?.becomeKey()
               }
          }
+    }
+    
+    @objc func tappedHotKey() {
+        print("hotKey tapped")
     }
 
     func applicationWillTerminate(_ aNotification: Notification) {
