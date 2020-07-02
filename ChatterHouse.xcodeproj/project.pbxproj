@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 51;
+	objectVersion = 52;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -12,6 +12,9 @@
 		A94AE5AE24A92AA0001C0B56 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A94AE5AD24A92AA0001C0B56 /* Assets.xcassets */; };
 		A94AE5B124A92AA0001C0B56 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A94AE5B024A92AA0001C0B56 /* Preview Assets.xcassets */; };
 		A94AE5B424A92AA0001C0B56 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = A94AE5B224A92AA0001C0B56 /* Main.storyboard */; };
+		A9DB702124AE32730039223D /* MultipeerKit in Frameworks */ = {isa = PBXBuildFile; productRef = A9DB702024AE32730039223D /* MultipeerKit */; };
+		A9DB702324AE33E80039223D /* AudioPayload.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9DB702224AE33E70039223D /* AudioPayload.swift */; };
+		A9DB702524AE41340039223D /* NSSound.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9DB702424AE41340039223D /* NSSound.swift */; };
 		DE985F58F610A2144092C96B /* Pods_ChatterHouse.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 23306B35A9FB243FBF90F89D /* Pods_ChatterHouse.framework */; };
 /* End PBXBuildFile section */
 
@@ -26,6 +29,8 @@
 		A94AE5B324A92AA0001C0B56 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		A94AE5B524A92AA0001C0B56 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		A94AE5B624A92AA0001C0B56 /* ChatterHouse.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = ChatterHouse.entitlements; sourceTree = "<group>"; };
+		A9DB702224AE33E70039223D /* AudioPayload.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioPayload.swift; sourceTree = "<group>"; };
+		A9DB702424AE41340039223D /* NSSound.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NSSound.swift; sourceTree = "<group>"; };
 		F0A23C5D768F32900CCD6D0E /* Pods-ChatterHouse.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ChatterHouse.debug.xcconfig"; path = "Target Support Files/Pods-ChatterHouse/Pods-ChatterHouse.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -35,6 +40,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				DE985F58F610A2144092C96B /* Pods_ChatterHouse.framework in Frameworks */,
+				A9DB702124AE32730039223D /* MultipeerKit in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -81,6 +87,8 @@
 			children = (
 				A94AE5A924A92A9E001C0B56 /* AppDelegate.swift */,
 				A94AE5AB24A92A9E001C0B56 /* ContentView.swift */,
+				A9DB702224AE33E70039223D /* AudioPayload.swift */,
+				A9DB702424AE41340039223D /* NSSound.swift */,
 				A94AE5AD24A92AA0001C0B56 /* Assets.xcassets */,
 				A94AE5B224A92AA0001C0B56 /* Main.storyboard */,
 				A94AE5B524A92AA0001C0B56 /* Info.plist */,
@@ -116,6 +124,9 @@
 			dependencies = (
 			);
 			name = ChatterHouse;
+			packageProductDependencies = (
+				A9DB702024AE32730039223D /* MultipeerKit */,
+			);
 			productName = ChatterHouse;
 			productReference = A94AE5A624A92A9E001C0B56 /* ChatterHouse.app */;
 			productType = "com.apple.product-type.application";
@@ -144,6 +155,9 @@
 				Base,
 			);
 			mainGroup = A94AE59D24A92A9E001C0B56;
+			packageReferences = (
+				A9DB701F24AE32720039223D /* XCRemoteSwiftPackageReference "MultipeerKit" */,
+			);
 			productRefGroup = A94AE5A724A92A9E001C0B56 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -215,6 +229,8 @@
 			files = (
 				A94AE5AC24A92A9E001C0B56 /* ContentView.swift in Sources */,
 				A94AE5AA24A92A9E001C0B56 /* AppDelegate.swift in Sources */,
+				A9DB702524AE41340039223D /* NSSound.swift in Sources */,
+				A9DB702324AE33E80039223D /* AudioPayload.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -417,6 +433,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		A9DB701F24AE32720039223D /* XCRemoteSwiftPackageReference "MultipeerKit" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/insidegui/MultipeerKit";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 0.2.1;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		A9DB702024AE32730039223D /* MultipeerKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = A9DB701F24AE32720039223D /* XCRemoteSwiftPackageReference "MultipeerKit" */;
+			productName = MultipeerKit;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = A94AE59E24A92A9E001C0B56 /* Project object */;
 }

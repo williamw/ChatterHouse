@@ -9,17 +9,38 @@
 import Cocoa
 import SwiftUI
 import Magnet
+import MultipeerKit
+
 
 @NSApplicationMain
 class AppDelegate: NSObject, NSApplicationDelegate {
 
     var popover: NSPopover!
     var statusBarItem: NSStatusItem!
+    var config = MultipeerConfiguration.default
+    
+    private lazy var transceiver: MultipeerTransceiver = {
+      config.serviceType = "ChatterHouse"
+      config.peerName = Host.current().name!
+      let t = MultipeerTransceiver(configuration: config)
+      
+      t.receive(AudioPayload.self) { [weak self] payload in
+        print(payload.message)
+        NSSound(named: .pop)?.play()
+      }
+      return t
+    }()
+    
+    private lazy var dataSource: MultipeerDataSource = {
+        MultipeerDataSource(transceiver: transceiver)
+    }()
 
 
     func applicationDidFinishLaunching(_ aNotification: Notification) {
         // Create the SwiftUI view that provides the window contents.
-        let contentView = ContentView()
+        let contentView = ContentView().environmentObject(dataSource)
+        
+        transceiver.resume()
         
         let popover = NSPopover()
         popover.contentSize = NSSize(width: 400, height: 400)
@@ -56,7 +77,9 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     }
     
     @objc func tappedHotKey() {
-        print("hotKey tapped")
+        print("hotKey tapped locally")
+        let payload = AudioPayload(message: "hotKey broadcast from \(config.peerName)")
+        transceiver.broadcast(payload)
     }
 
     func applicationWillTerminate(_ aNotification: Notification) {
