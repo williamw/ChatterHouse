@@ -103,13 +103,6 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         }
     }
     
-    func stopBroadcasting() {
-        if let button = self.statusBarItem.button {
-            sharedBroadcastStatus = false
-            button.image = NSImage(named: "Icon-Off")
-        }
-    }
-    
     func startBroadcasting() {
         if let button = self.statusBarItem.button {
             let payload = AudioPayload(message: "\(config.peerName) started broadcasting")
@@ -118,6 +111,13 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
             button.image = NSImage(named: "Icon-On")
             
             transceiver.broadcast(payload)
+        }
+    }
+    
+    func stopBroadcasting() {
+        if let button = self.statusBarItem.button {
+            sharedBroadcastStatus = false
+            button.image = NSImage(named: "Icon-Off")
         }
     }
     
@@ -153,7 +153,6 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         }
         
         eventMonitor?.start()
-        
     }
     
     func closePopover(sender: Any?) {
@@ -200,4 +199,3 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         // Insert code here to tear down your application
     }
 }
-

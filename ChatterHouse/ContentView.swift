@@ -8,22 +8,15 @@
 
 import SwiftUI
 import MultipeerKit
-import Combine
-
-final class ViewModel: ObservableObject {
-    @Published var message: String = "Press ⌘+control+B to test"
-}
 
 struct ContentView: View {
-    @ObservedObject private(set) var viewModel = ViewModel()
-    @EnvironmentObject var dataSource: MultipeerDataSource
-    
+
     var body: some View {
-        Text(viewModel.message)
+        Text("Preferences")
             .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
-}
 
+}
 
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
