@@ -15,6 +15,7 @@
 		A9DB702124AE32730039223D /* MultipeerKit in Frameworks */ = {isa = PBXBuildFile; productRef = A9DB702024AE32730039223D /* MultipeerKit */; };
 		A9DB702324AE33E80039223D /* AudioPayload.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9DB702224AE33E70039223D /* AudioPayload.swift */; };
 		A9DB702524AE41340039223D /* NSSound.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9DB702424AE41340039223D /* NSSound.swift */; };
+		A9DB702724B0D94A0039223D /* EventMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9DB702624B0D94A0039223D /* EventMonitor.swift */; };
 		DE985F58F610A2144092C96B /* Pods_ChatterHouse.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 23306B35A9FB243FBF90F89D /* Pods_ChatterHouse.framework */; };
 /* End PBXBuildFile section */
 
@@ -31,6 +32,7 @@
 		A94AE5B624A92AA0001C0B56 /* ChatterHouse.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = ChatterHouse.entitlements; sourceTree = "<group>"; };
 		A9DB702224AE33E70039223D /* AudioPayload.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioPayload.swift; sourceTree = "<group>"; };
 		A9DB702424AE41340039223D /* NSSound.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NSSound.swift; sourceTree = "<group>"; };
+		A9DB702624B0D94A0039223D /* EventMonitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventMonitor.swift; sourceTree = "<group>"; };
 		F0A23C5D768F32900CCD6D0E /* Pods-ChatterHouse.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ChatterHouse.debug.xcconfig"; path = "Target Support Files/Pods-ChatterHouse/Pods-ChatterHouse.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -88,6 +90,7 @@
 				A94AE5A924A92A9E001C0B56 /* AppDelegate.swift */,
 				A94AE5AB24A92A9E001C0B56 /* ContentView.swift */,
 				A9DB702224AE33E70039223D /* AudioPayload.swift */,
+				A9DB702624B0D94A0039223D /* EventMonitor.swift */,
 				A9DB702424AE41340039223D /* NSSound.swift */,
 				A94AE5AD24A92AA0001C0B56 /* Assets.xcassets */,
 				A94AE5B224A92AA0001C0B56 /* Main.storyboard */,
@@ -228,6 +231,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				A94AE5AC24A92A9E001C0B56 /* ContentView.swift in Sources */,
+				A9DB702724B0D94A0039223D /* EventMonitor.swift in Sources */,
 				A94AE5AA24A92A9E001C0B56 /* AppDelegate.swift in Sources */,
 				A9DB702524AE41340039223D /* NSSound.swift in Sources */,
 				A9DB702324AE33E80039223D /* AudioPayload.swift in Sources */,
