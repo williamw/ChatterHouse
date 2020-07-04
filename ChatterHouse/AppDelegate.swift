@@ -11,9 +11,10 @@ import SwiftUI
 import Magnet
 import MultipeerKit
 
-
 @NSApplicationMain
 class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
+    
+    var sharedBroadcastStatus: Bool!
     
     var popover: NSPopover!
     var statusBarItem: NSStatusItem!
@@ -41,11 +42,13 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         // Create the SwiftUI view that provides the window contents.
         let contentView = ContentView().environmentObject(dataSource)
         
+        sharedBroadcastStatus = false
+        
         transceiver.resume()
         
         self.statusBarItem = NSStatusBar.system.statusItem(withLength: CGFloat(NSStatusItem.variableLength))
         if let button = self.statusBarItem.button {
-            button.image = NSImage(named: "Icon")
+            button.image = NSImage(named: "Icon-Off")
             button.action = #selector(statusBarButtonClicked(sender:))
             button.sendAction(on: [.leftMouseUp, .rightMouseUp])
             // button.action = #selector(togglePopover(_:))
@@ -57,12 +60,14 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         popover.contentViewController = NSHostingController(rootView: contentView)
         self.popover = popover
         
-        // ⌘ + Control + B
-        guard let keyCombo = KeyCombo(key: .b, cocoaModifiers: [.command, .control]) else { return }
+        // Global hotkey
+        guard let keyCombo = KeyCombo(doubledCocoaModifiers: .control) else { return }
+        
+        // guard let keyCombo = KeyCombo(key: .b, cocoaModifiers: [.command, .control]) else { return }
         let hotKey = HotKey(identifier: "CommandControlB",
                             keyCombo: keyCombo,
                             target: self,
-                            action: #selector(AppDelegate.tappedHotKey))
+                            action: #selector(AppDelegate.toggleBroadcastStatus))
         hotKey.register()
         
         // Close the pop-over when it loses focus
@@ -74,6 +79,22 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         }
     }
     
+    @objc func toggleBroadcastStatus() {
+        if let button = self.statusBarItem.button {
+            if sharedBroadcastStatus {
+                sharedBroadcastStatus = false
+                button.image = NSImage(named: "Icon-Off")
+            } else {
+                let payload = AudioPayload(message: "\(config.peerName) started broadcasting")
+                
+                sharedBroadcastStatus = true
+                button.image = NSImage(named: "Icon-On")
+                
+                transceiver.broadcast(payload)
+            }
+        } else { return }
+    }
+    
     // Detect if left or right-click on icon
     @objc func statusBarButtonClicked(sender: NSStatusBarButton) {
         let event = NSApp.currentEvent!
@@ -83,7 +104,8 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
             constructMenu()
             sender.performClick(nil)
         } else {
-            togglePopover(sender)
+            toggleBroadcastStatus()
+            //togglePopover(sender)
         }
     }
     
@@ -110,14 +132,19 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         eventMonitor?.stop()
     }
     
-    @objc func tappedHotKey() {
-        print("hotKey tapped locally")
-        let payload = AudioPayload(message: "hotKey broadcast from \(config.peerName)")
-        transceiver.broadcast(payload)
-    }
-    
+    //⌃
     func constructMenu() {
+        var startStop: String!
+        
+        if sharedBroadcastStatus {
+            startStop = "Stop"
+        } else {
+            startStop = "Start"
+        }
+        
         let menu = NSMenu()
+        menu.addItem(NSMenuItem(title: "\(startStop!) Broadcasting", action: #selector(toggleBroadcastStatus), keyEquivalent: ""))
+        menu.addItem(NSMenuItem.separator())
         menu.addItem(NSMenuItem(title: "Quit ChatterHouse", action: #selector(NSApplication.terminate(_:)), keyEquivalent: "q"))
         statusBarItem.menu = menu
         statusBarItem.menu?.delegate = self
