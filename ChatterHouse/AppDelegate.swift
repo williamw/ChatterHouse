@@ -8,11 +8,16 @@
 
 import Cocoa
 import SwiftUI
-import Magnet
+import AVFoundation
+
 import MultipeerKit
+import Magnet
 
 @NSApplicationMain
 class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
+    
+    let audioEngine = AVAudioEngine()
+    let audioPermission = AVCaptureDevice.authorizationStatus(for: .audio)
     
     var sharedBroadcastStatus: Bool!
     var sharedListeningStatus: Bool!
@@ -44,6 +49,23 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         // Start listening for broadcasts
         transceiver.resume()
         
+        // Handle microphone permission
+        // TODO: Add button to preference for requesting audio permission if not authorized
+        switch (audioPermission) {
+        case .notDetermined: AVCaptureDevice.requestAccess(for: .audio) { (accessGranted) in
+            print("Audio Permission: \(accessGranted)") }
+            break
+                
+        case .authorized: break
+        
+        case .denied: break
+                
+        case .restricted: break
+                
+        default: break
+        }
+        
+        
         // Setup the menubar icon
         self.statusBarItem = NSStatusBar.system.statusItem(withLength: CGFloat(NSStatusItem.variableLength))
         if let button = self.statusBarItem.button {
@@ -56,7 +78,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         let contentView = ContentView()
         
         let popover = NSPopover()
-        popover.contentSize = NSSize(width: 400, height: 400)
+        popover.contentSize = NSSize(width: 350, height: 400)
         popover.behavior = .transient
         popover.contentViewController = NSHostingController(rootView: contentView)
         self.popover = popover
@@ -84,7 +106,8 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         let event = NSApp.currentEvent!
         
         if (event.type ==  NSEvent.EventType.rightMouseUp) ||
-            (event.modifierFlags.contains(.control)) {
+            (event.modifierFlags.contains(.control)) ||
+            (audioPermission != .authorized) {
             // Right-click or ctrl+click
             presentMenu()
             sender.performClick(nil)
@@ -104,19 +127,31 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
     }
     
     func startBroadcasting() {
-        if let button = self.statusBarItem.button {
-            let payload = AudioPayload(message: "\(config.peerName) started broadcasting")
-            
+        if (audioPermission == .authorized) {
             sharedBroadcastStatus = true
-            button.image = NSImage(named: "Icon-On")
             
-            transceiver.broadcast(payload)
+            let message = AudioPayload(message: "\(config.peerName) started broadcasting")
+            transceiver.broadcast(message)
+            
+//            do {
+//                try audioEngine.start()
+//            } catch let error as NSError {
+//                print("Got an error starting audioEngine: \(error.domain), \(error)")
+//            }
+            
+            if let button = self.statusBarItem.button {
+                button.image = NSImage(named: "Icon-On")
+            }
+        } else {
+            
         }
     }
     
     func stopBroadcasting() {
+        sharedBroadcastStatus = false
+//        if audioPermission == .authorized { audioEngine.stop() }
+        
         if let button = self.statusBarItem.button {
-            sharedBroadcastStatus = false
             button.image = NSImage(named: "Icon-Off")
         }
     }
@@ -163,28 +198,30 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
     // Setup the icon's right-click menu
     // Ctrl character: ⌃
     func presentMenu() {
-        var startStop: String!
+        let menu = NSMenu()
         
-        if sharedBroadcastStatus {
-            startStop = "Stop"
-        } else {
-            startStop = "Start"
+        if audioPermission == .authorized {
+            var startStop: String!
+            if sharedBroadcastStatus {
+                startStop = "Stop"
+            } else {
+                startStop = "Start"
+            }
+        
+            menu.addItem(NSMenuItem(title: "\(startStop!) Broadcasting", action: #selector(toggleBroadcastStatus), keyEquivalent: ""))
         }
         
-        let menu = NSMenu()
-        menu.addItem(NSMenuItem(title: "\(startStop!) Broadcasting", action: #selector(toggleBroadcastStatus), keyEquivalent: ""))
-        menu.addItem(NSMenuItem(title: "Silence", action: #selector(toggleListeningStatus), keyEquivalent: ""))
+        let silenceItem: NSMenuItem = NSMenuItem(title: "Silence", action: #selector(toggleListeningStatus), keyEquivalent: "")
+        if sharedListeningStatus == true {
+            silenceItem.state = NSControl.StateValue.off
+        } else {
+            silenceItem.state = NSControl.StateValue.on
+        }
+
+        menu.addItem(silenceItem)
         menu.addItem(NSMenuItem.separator())
         menu.addItem(NSMenuItem(title: "Preferences...", action: #selector(togglePopover(_:)), keyEquivalent: ""))
         menu.addItem(NSMenuItem(title: "Quit ChatterHouse", action: #selector(NSApplication.terminate(_:)), keyEquivalent: ""))
-        
-        if let listeningItem = menu.item(withTitle: "Silence") {
-            if sharedListeningStatus == true {
-                listeningItem.state = NSControl.StateValue.off
-            } else {
-                listeningItem.state = NSControl.StateValue.on
-            }
-        }
         
         statusBarItem.menu = menu
         statusBarItem.menu?.delegate = self
