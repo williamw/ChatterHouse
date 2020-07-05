@@ -52,19 +52,27 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         // Handle microphone permission
         // TODO: Add button to preference for requesting audio permission if not authorized
         switch (audioPermission) {
-        case .notDetermined: AVCaptureDevice.requestAccess(for: .audio) { (accessGranted) in
-            print("Audio Permission: \(accessGranted)") }
+        case .notDetermined:
+            requestAudioPermission()
             break
-                
+            
         case .authorized: break
-        
+            
         case .denied: break
-                
+            
         case .restricted: break
-                
-        default: break
-        }
+            
+        default: break }
         
+        // Tap the audio input
+        let inputNode = audioEngine.inputNode
+        inputNode.installTap(
+            onBus: 0,         // mono input
+            bufferSize: 1024, // a request, not a guarantee
+            format: nil,      // no format translation
+            block: { buffer, when in
+                print("Audio: \(String(describing: buffer))") // AVAudioPCMBuffer
+        })
         
         // Setup the menubar icon
         self.statusBarItem = NSStatusBar.system.statusItem(withLength: CGFloat(NSStatusItem.variableLength))
@@ -117,6 +125,18 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         }
     }
     
+    // Grant permission to microphone
+    @objc func requestAudioPermission() {
+        AVCaptureDevice.requestAccess(for: .audio) { (accessGranted) in
+            print("Audio Permission: \(accessGranted)")
+        }
+    }
+    
+    @objc func openSystemPreferences() {
+        let url: String = "x-apple.systempreferences:com.apple.preference.security?Privacy_Microphone"
+        NSWorkspace.shared.open(URL(string: url)!)
+    }
+    
     // Start / stop broadcasting
     @objc func toggleBroadcastStatus() {
         if sharedBroadcastStatus {
@@ -133,11 +153,11 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
             let message = AudioPayload(message: "\(config.peerName) started broadcasting")
             transceiver.broadcast(message)
             
-//            do {
-//                try audioEngine.start()
-//            } catch let error as NSError {
-//                print("Got an error starting audioEngine: \(error.domain), \(error)")
-//            }
+            do {
+                try audioEngine.start()
+            } catch let error as NSError {
+                print("Got an error starting audioEngine: \(error.domain), \(error)")
+            }
             
             if let button = self.statusBarItem.button {
                 button.image = NSImage(named: "Icon-On")
@@ -149,7 +169,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
     
     func stopBroadcasting() {
         sharedBroadcastStatus = false
-//        if audioPermission == .authorized { audioEngine.stop() }
+        if audioPermission == .authorized { audioEngine.stop() }
         
         if let button = self.statusBarItem.button {
             button.image = NSImage(named: "Icon-Off")
@@ -209,6 +229,8 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
             }
         
             menu.addItem(NSMenuItem(title: "\(startStop!) Broadcasting", action: #selector(toggleBroadcastStatus), keyEquivalent: ""))
+        } else {
+            menu.addItem(NSMenuItem(title: "Provide Access to Microphone...", action: #selector(openSystemPreferences), keyEquivalent: ""))
         }
         
         let silenceItem: NSMenuItem = NSMenuItem(title: "Silence", action: #selector(toggleListeningStatus), keyEquivalent: "")
