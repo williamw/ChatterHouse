@@ -16,35 +16,43 @@ import Magnet
 @NSApplicationMain
 class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
     
-    let audioEngine = AVAudioEngine()
     let audioPermission = AVCaptureDevice.authorizationStatus(for: .audio)
+    let audioEngine = AVAudioEngine()
+    let audioPlayer = AVAudioPlayerNode()
+    let audioBus = 0
+    lazy var inputNode = audioEngine.inputNode
+    lazy var audioFormat = inputNode.inputFormat(forBus: audioBus)
+//    let audioFormat = AVAudioFormat(
+//    commonFormat: .pcmFormatFloat32,
+//    sampleRate: 44100,
+//    channels: 1,
+//    interleaved: true )!
     
-    var sharedBroadcastStatus: Bool!
-    var sharedListeningStatus: Bool!
+    var broadcastActive: Bool!
+    var listeningActive: Bool!
     
     var popover: NSPopover!
     var statusBarItem: NSStatusItem!
     var eventMonitor: EventMonitor?
-    var config = MultipeerConfiguration.default
     
+    var multipeerConfig = MultipeerConfiguration.default
     private lazy var transceiver: MultipeerTransceiver = {
-        config.serviceType = "ChatterHouse"
-        config.peerName = Host.current().name!
-        let t = MultipeerTransceiver(configuration: config)
+        multipeerConfig.serviceType = "ChatterHouse"
+        multipeerConfig.peerName = Host.current().name!
+        let t = MultipeerTransceiver(configuration: multipeerConfig)
         
         t.receive(AudioPayload.self) { [weak self] payload in
-            print(payload.message)
-            NSSound(named: .pop)?.play()
+            self!.receiveBroadcast(payload)
         }
         return t
     }()
     
     func applicationDidFinishLaunching(_ aNotification: Notification) {
         // Keep track of whether or not we're broadcasting
-        sharedBroadcastStatus = false
+        broadcastActive = false
         
         // Keep track of whether or not we're listening
-        sharedListeningStatus = true
+        listeningActive = true
         
         // Start listening for broadcasts
         transceiver.resume()
@@ -65,14 +73,24 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         default: break }
         
         // Tap the audio input
-        let inputNode = audioEngine.inputNode
         inputNode.installTap(
             onBus: 0,         // mono input
-            bufferSize: 1024, // a request, not a guarantee
-            format: nil,      // no format translation
+            bufferSize: 2048, // a request, not a guarantee
+            format: audioFormat,      // no format translation
             block: { buffer, when in
-                print("Audio: \(String(describing: buffer))") // AVAudioPCMBuffer
+                self.broadcastAudio(buffer)
         })
+        
+        // Setup the audio player and output
+        audioEngine.attach(audioPlayer)
+        audioEngine.connect(audioPlayer, to:audioEngine.outputNode, format: nil)
+        
+        do {
+            try audioEngine.start()
+            audioPlayer.play()
+        } catch let error as NSError {
+            print("Got an error starting audioEngine: \(error.domain), \(error)")
+        }
         
         // Setup the menubar icon
         self.statusBarItem = NSStatusBar.system.statusItem(withLength: CGFloat(NSStatusItem.variableLength))
@@ -99,7 +117,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
             }
         }
         
-        // Setup the global hotkey
+        // Setup the global broadcast hotkey
         guard let keyCombo = KeyCombo(doubledCocoaModifiers: .control) else { return }
         // guard let keyCombo = KeyCombo(key: .b, cocoaModifiers: [.command, .control]) else { return }
         let hotKey = HotKey(identifier: "CommandControlB",
@@ -107,6 +125,39 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
                             target: self,
                             action: #selector(AppDelegate.toggleBroadcastStatus))
         hotKey.register()
+    }
+    
+    func broadcastAudio(_ buffer: AVAudioPCMBuffer) {
+        if self.broadcastActive == true {
+            let bufferData = Data(buffer: buffer)
+            // print("Data: \(String(describing: bufferData))")
+            
+            let payload = AudioPayload(from: self.multipeerConfig.peerName, status: "buffer", data: bufferData)
+            self.transceiver.broadcast(payload)
+            //receiveBroadcast(payload)
+        }
+    }
+    
+    func receiveBroadcast(_ payload:AudioPayload) {
+        switch (payload.status) {
+        case "start":
+            // NSSound(named: .pop)?.play()
+            break
+            
+        case "buffer":
+            if listeningActive == true {
+                let buffer = payload.data?.makePCMBuffer(format: audioFormat)
+                audioPlayer.scheduleBuffer(buffer!,
+                                                 at: nil,
+                                                 options: AVAudioPlayerNodeBufferOptions(),
+                                                 completionHandler: nil)
+            }
+            break
+            
+        default: break
+        }
+
+        print("Received \(payload.status) from \(payload.from) \(String(describing: payload.data))")
     }
     
     // Detect if left or right-click on icon
@@ -139,7 +190,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
     
     // Start / stop broadcasting
     @objc func toggleBroadcastStatus() {
-        if sharedBroadcastStatus {
+        if broadcastActive {
             stopBroadcasting()
         } else {
             startBroadcasting()
@@ -148,16 +199,10 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
     
     func startBroadcasting() {
         if (audioPermission == .authorized) {
-            sharedBroadcastStatus = true
+            broadcastActive = true
             
-            let message = AudioPayload(message: "\(config.peerName) started broadcasting")
-            transceiver.broadcast(message)
-            
-            do {
-                try audioEngine.start()
-            } catch let error as NSError {
-                print("Got an error starting audioEngine: \(error.domain), \(error)")
-            }
+            let payload = AudioPayload(from: multipeerConfig.peerName, status: "start", data: nil)
+            transceiver.broadcast(payload)
             
             if let button = self.statusBarItem.button {
                 button.image = NSImage(named: "Icon-On")
@@ -168,8 +213,11 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
     }
     
     func stopBroadcasting() {
-        sharedBroadcastStatus = false
+        broadcastActive = false
         if audioPermission == .authorized { audioEngine.stop() }
+        
+        let payload = AudioPayload(from: multipeerConfig.peerName, status: "stop", data: nil)
+        transceiver.broadcast(payload)
         
         if let button = self.statusBarItem.button {
             button.image = NSImage(named: "Icon-Off")
@@ -179,13 +227,13 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
     // Start / stop listening
     @objc func toggleListeningStatus() {
         if let button = self.statusBarItem.button {
-            if sharedListeningStatus {
-                sharedListeningStatus = false
+            if listeningActive {
+                listeningActive = false
                 stopBroadcasting()
                 transceiver.stop()
                 button.image = NSImage(named: "Icon-Silenced")
             } else {
-                sharedListeningStatus = true
+                listeningActive = true
                 transceiver.resume()
                 button.image = NSImage(named: "Icon-Off")
 
@@ -222,7 +270,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         
         if audioPermission == .authorized {
             var startStop: String!
-            if sharedBroadcastStatus {
+            if broadcastActive {
                 startStop = "Stop"
             } else {
                 startStop = "Start"
@@ -234,7 +282,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         }
         
         let silenceItem: NSMenuItem = NSMenuItem(title: "Silence", action: #selector(toggleListeningStatus), keyEquivalent: "")
-        if sharedListeningStatus == true {
+        if listeningActive == true {
             silenceItem.state = NSControl.StateValue.off
         } else {
             silenceItem.state = NSControl.StateValue.on
@@ -255,6 +303,6 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
     }
     
     func applicationWillTerminate(_ aNotification: Notification) {
-        // Insert code here to tear down your application
+        stopBroadcasting()
     }
 }
