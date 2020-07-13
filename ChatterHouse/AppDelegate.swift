@@ -133,15 +133,16 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
             // print("Data: \(String(describing: bufferData))")
             
             let payload = AudioPayload(from: self.multipeerConfig.peerName, status: "buffer", data: bufferData)
-            self.transceiver.broadcast(payload)
+            self.transceiver.send(payload, to: transceiver.availablePeers)
+            //self.transceiver.broadcast(payload)
             //receiveBroadcast(payload)
         }
     }
     
     func receiveBroadcast(_ payload:AudioPayload) {
         switch (payload.status) {
-        case "start":
-            // NSSound(named: .pop)?.play()
+        case "start", "stop":
+            NSSound(named: .pop)?.play()
             break
             
         case "buffer":
@@ -214,7 +215,6 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
     
     func stopBroadcasting() {
         broadcastActive = false
-        if audioPermission == .authorized { audioEngine.stop() }
         
         let payload = AudioPayload(from: multipeerConfig.peerName, status: "stop", data: nil)
         transceiver.broadcast(payload)
