@@ -16,7 +16,7 @@ import Magnet
 @NSApplicationMain
 class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
     
-    let audioPermission = AVCaptureDevice.authorizationStatus(for: .audio)
+    var audioPermission = AVCaptureDevice.authorizationStatus(for: .audio)
     let audioEngine = AVAudioEngine()
     let audioPlayer = AVAudioPlayerNode()
     let audioBus = 0
@@ -180,6 +180,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
     // Grant permission to microphone
     @objc func requestAudioPermission() {
         AVCaptureDevice.requestAccess(for: .audio) { (accessGranted) in
+            self.audioPermission = AVCaptureDevice.authorizationStatus(for: .audio)
             print("Audio Permission: \(accessGranted)")
         }
     }
@@ -203,20 +204,22 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
             broadcastActive = true
             listeningActive = false
             
+            NSSound(named: .pop)?.play()
+            
             let payload = AudioPayload(from: multipeerConfig.peerName, status: "start", data: nil)
             transceiver.broadcast(payload)
             
             if let button = self.statusBarItem.button {
                 button.image = NSImage(named: "Icon-On")
             }
-        } else {
-            
         }
     }
     
     func stopBroadcasting() {
         broadcastActive = false
         listeningActive = true
+        
+        NSSound(named: .pop)?.play()
         
         let payload = AudioPayload(from: multipeerConfig.peerName, status: "stop", data: nil)
         transceiver.broadcast(payload)
