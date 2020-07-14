@@ -230,13 +230,13 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
     @objc func toggleListeningStatus() {
         if let button = self.statusBarItem.button {
             if listeningActive {
-                listeningActive = false
                 stopBroadcasting()
+                listeningActive = false
                 transceiver.stop()
                 button.image = NSImage(named: "Icon-Silenced")
             } else {
-                listeningActive = true
                 transceiver.resume()
+                listeningActive = true
                 button.image = NSImage(named: "Icon-Off")
 
             }
@@ -290,7 +290,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
             silenceItem.state = NSControl.StateValue.on
         }
 
-        menu.addItem(silenceItem)
+        if !broadcastActive { menu.addItem(silenceItem) }
         menu.addItem(NSMenuItem.separator())
         menu.addItem(NSMenuItem(title: "Preferences...", action: #selector(togglePopover(_:)), keyEquivalent: ""))
         menu.addItem(NSMenuItem(title: "Quit ChatterHouse", action: #selector(NSApplication.terminate(_:)), keyEquivalent: ""))
