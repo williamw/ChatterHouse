@@ -201,6 +201,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
     func startBroadcasting() {
         if (audioPermission == .authorized) {
             broadcastActive = true
+            listeningActive = false
             
             let payload = AudioPayload(from: multipeerConfig.peerName, status: "start", data: nil)
             transceiver.broadcast(payload)
@@ -215,6 +216,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
     
     func stopBroadcasting() {
         broadcastActive = false
+        listeningActive = true
         
         let payload = AudioPayload(from: multipeerConfig.peerName, status: "stop", data: nil)
         transceiver.broadcast(payload)
